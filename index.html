@@ -268,7 +268,7 @@
       // Handle the "Sabtu bebas" case specifically if it's a fixed point in the cycle
       // From previous context, "Sabtu pertama A1" and "Sabtu" (index 10) was "Monggo ingkang longgar".
       // Let's assume this refers to `days[6]` (Saturday) in the cycle.
-      //if (todayName === 'Sabtu' && diffDays % periodLength === 6) { // If Saturday and the 7th day of a 14-day cycle (0-indexed)
+      if (todayName === 'Sabtu' && diffDays % periodLength === 6) { // If Saturday and the 7th day of a 14-day cycle (0-indexed)
          // This needs to align with where the 'Monggo ingkang longgar' Saturday actually falls in YOUR cycle.
          // If A2 is 20 Juli (Minggu), then 26 Juli will be Sabtu (diffDays = 6).
          // So if 26 Juli is the "Monggo ingkang longgar" day, then this condition is correct.
