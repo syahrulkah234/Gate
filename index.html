@@ -272,12 +272,12 @@
          // This needs to align with where the 'Monggo ingkang longgar' Saturday actually falls in YOUR cycle.
          // If A2 is 20 Juli (Minggu), then 26 Juli will be Sabtu (diffDays = 6).
          // So if 26 Juli is the "Monggo ingkang longgar" day, then this condition is correct.
-        return { day: todayName, person: 'Monggo ingkang longgar ngunci gerbang!' };
+        return { day: todayName, person: 'Monggo..!' };
       }
       
       // Fallback for missing juru kunci at index 10, if '?' is actually meant to be free day
       if (juruKunci[juruIndex] === '?') {
-         return { day: todayName, person: 'Monggo ingkang longgar ngunci gerbang!' };
+         return { day: todayName, person: 'Monggo..!' };
       }
 
 
