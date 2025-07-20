@@ -189,7 +189,7 @@
   <script>
     // Konfigurasi juru kunci (13 juru kunci)
     const juruKunci = ['A1', 'A2', 'A4', 'A5', 'A6', 'B9', 'B8', 'B7', 'B6', 'B5', 'B3', 'B2', 'B1'];
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const days = ['Sabtu', 'Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu', 'Senin', 'Selasa', 'Rabu','Kamis','Jumat'];
     const periodLength = 14; // Periode 14 hari
 
     // Fungsi utilitas untuk format tanggal (DD/MM/YY)
@@ -203,13 +203,13 @@
     // Fungsi untuk menentukan juru kunci berdasarkan tanggal
     function getJuruKunciForDay(date) {
       const today = days[date.getDay()];
-      const startDate = new Date('2025-01-05'); // Minggu pertama A1
+      const startDate = new Date('2025-07-19'); // Minggu pertama A1
       const diffTime = Math.abs(date - startDate);
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       const periodDay = diffDays % periodLength; // Hari dalam periode (0-13)
 
       // Sabtu pertama dalam periode (hari ke-6, karena Minggu=0, Sabtu=6)
-      if (today === 'Sabtu' && periodDay === 6) {
+      if (today === 'Selasa' && periodDay === 2) {
         return { day: today, person: 'Monggo ingkang longgar ngunci gerbang!' };
       }
 
