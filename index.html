@@ -188,8 +188,8 @@
 
   <script>
     // Konfigurasi juru kunci (13 juru kunci)
-    const juruKunci = ['A1', 'A2', 'A4', 'A5', 'A6', 'B9', 'B8', 'B7', 'B6', 'B5', '?','B3', 'B2', 'B1'];
-    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']; // Perbaikan urutan hari
+    const juruKunci = ['A1', 'A2', 'A4', 'A5', 'A6', 'B9', 'B8', 'B7', 'B6', 'B5', '?', 'B3', 'B2', 'B1'];
+    const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']; // Urutan hari yang benar
     const periodLength = 14; // Periode 14 hari
 
     // Fungsi utilitas untuk format tanggal (DD/MM/YY)
@@ -204,82 +204,38 @@
     function getJuruKunciForDay(date) {
       const todayDayIndex = date.getDay(); // 0 for Sunday, 1 for Monday, etc.
       const todayName = days[todayDayIndex];
-      const startDate = new Date('2025-07-20T00:00:00'); // Minggu, 20 Juli 2025 sebagai hari pertama A2
-      
-      // Set both dates to the start of their respective days to accurately calculate difference
+      const startDate = new Date('2025-07-20T00:00:00'); // Minggu, 20 Juli 2025 (A2) sebagai titik awal
+
+      // Set kedua tanggal ke awal hari untuk perhitungan selisih yang akurat
       const startOfDayDate = new Date(date);
       startOfDayDate.setHours(0, 0, 0, 0);
       
       const startOfDayStartDate = new Date(startDate);
       startOfDayStartDate.setHours(0, 0, 0, 0);
 
-      const diffTime = Math.abs(startOfDayDate - startOfDayStartDate);
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      
-      // Calculate periodDay based on whether it's before or after startDate
-      let periodDay = diffDays % periodLength;
+      const diffTime = startOfDayDate - startOfDayStartDate; // Gunakan langsung selisih waktu
+      let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-      // Adjust periodDay if the current date is before the startDate
-      if (startOfDayDate < startOfDayStartDate) {
-          periodDay = (periodLength - (diffDays % periodLength)) % periodLength;
+      // Jika tanggal saat ini sebelum startDate, pastikan diffDays tetap positif untuk perhitungan modulo yang benar
+      if (diffDays < 0) {
+        // Ini adalah cara untuk menghitung mundur dalam siklus
+        diffDays = (periodLength - (Math.abs(diffDays) % periodLength)) % periodLength;
+      } else {
+        diffDays = diffDays % periodLength;
       }
+
+      // Atur juru kunci berdasarkan siklus 14 hari
+      // Jika A2 adalah pada diffDays 0 (Minggu, 20 Juli 2025), maka juruKunci[1] (A2) yang keluar.
+      // Jadi, (diffDays + 1) untuk menggeser indeks
+      const juruIndex = (diffDays + 1) % juruKunci.length; // +1 untuk offset A2, % untuk melingkar
       
-      // Adjust for the 'Sabtu' exception if it falls on the first Saturday of the period based on the cycle
-      // The original logic had 'Sabtu' as day 10 in a 0-13 cycle (meaning 11th day)
-      // If the reference date (20 Juli 2025) is A2 (day 1 of the cycle),
-      // then A1 would be 1 day before A2 in the cycle, and the 'Sabtu' exception
-      // for "Monggo ingkang longgar" needs to be correctly mapped within the 14-day cycle.
-      // Assuming 'Sabtu' with 'Monggo ingkang longgar' is a fixed day in the cycle, let's find its position.
-      // If A2 is day 0, then the 'Sabtu' with special message needs its consistent index.
-      // Let's re-evaluate based on the provided sample data.
+      // Menghilangkan logika "Sabtu bebas" khusus.
+      // Juru kunci akan mengikuti urutan juruKunci[] berdasarkan `juruIndex`.
 
-      // If the current day is 'Sabtu' and it maps to the specific index for 'Monggo ingkang longgar'
-      // This part requires careful mapping to your actual 14-day cycle.
-      // Assuming the special 'Sabtu' is at index 13 in a 0-13 cycle if A2 is index 1.
-      // Let's assume A1 starts a period, and A2 is the second day (index 1).
-      // If the initial "Sabtu pertama A1" comment meant A1 is on a Saturday, then the days array needs to reflect this.
-      // With the 'days' array starting 'Minggu', 'Sabtu' is index 6.
-
-      // Let's assume the order of juruKunci is directly mapped to `periodDay`.
-      // The current logic 'Sabtu' && periodDay === 10 is from previous context
-      // Let's re-align the juruKunci array based on `startDate` being 'Minggu, 20 Juli 2025' and A2.
-      // This implies:
-      // Minggu, 20 Juli 2025 -> A2 (index 1)
-      // Senin, 21 Juli 2025 -> A4 (index 2)
-      // ...
-      // Sabtu, 26 Juli 2025 -> ??? (This would be periodDay = 6, but juruKunci is only mapped from index 1 for A2)
-
-      // Let's simplify and make the startDate `new Date('2025-07-20')` which is a Sunday, and A2 is assigned to it.
-      // So, A2 is at `periodDay = 0` (relative to this startDate).
-      // juruKunci[0] = A1 (from array definition), juruKunci[1] = A2.
-      // If A2 is the start, then juruKunci index should start from 1 for the first day.
-      // The `juruKunci` array starts with A1, A2, A4...
-      // If 'Minggu, 20 Juli 2025' is A2, then A2 is `juruKunci[1]`.
-      // So, the mapping should be `(diffDays + 1) % juruKunci.length`.
-      // This needs a small offset to align A2 with the first day.
-      // If A2 is the starting point (day 0 of the cycle), then the index for juruKunci should be adjusted.
-      // Let's assume the `juruKunci` array should be re-ordered if A2 is truly the start.
-
-      // Alternative: map the `startDate` (Minggu, 20 Juli 2025) to `juruKunci[1]` (A2).
-      // So the formula `juruIndex = (diffDays % juruKunci.length + 1) % juruKunci.length;`
-      // This makes sure A2 is the output for `diffDays = 0`.
-      const juruIndex = (diffDays + 1) % juruKunci.length; // +1 to offset, % to loop
-
-      // Handle the "Sabtu bebas" case specifically if it's a fixed point in the cycle
-      // From previous context, "Sabtu pertama A1" and "Sabtu" (index 10) was "Monggo ingkang longgar".
-      // Let's assume this refers to `days[6]` (Saturday) in the cycle.
-      if (todayName === 'Sabtu' && diffDays % periodLength === 6) { // If Saturday and the 7th day of a 14-day cycle (0-indexed)
-         // This needs to align with where the 'Monggo ingkang longgar' Saturday actually falls in YOUR cycle.
-         // If A2 is 20 Juli (Minggu), then 26 Juli will be Sabtu (diffDays = 6).
-         // So if 26 Juli is the "Monggo ingkang longgar" day, then this condition is correct.
-        return { day: todayName, person: 'Monggo..!' };
-      }
-      
-      // Fallback for missing juru kunci at index 10, if '?' is actually meant to be free day
+      // Menangani kasus jika juru kunci yang dihasilkan adalah '?'
       if (juruKunci[juruIndex] === '?') {
-         return { day: todayName, person: 'Monggo..!' };
+         return { day: todayName, person: 'yuk...!' };
       }
-
 
       return { day: todayName, person: juruKunci[juruIndex] };
     }
@@ -287,7 +243,7 @@
     // Fungsi untuk menampilkan waktu saat ini
     function updateCurrentTime() {
       const timeDiv = document.getElementById('currentTime');
-      const now = new Date(); // **DIUBAH:** Menggunakan waktu saat ini
+      const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       timeDiv.textContent = `${hours}:${minutes}`;
@@ -296,7 +252,7 @@
     // Fungsi untuk menampilkan jadwal harian
     function updateSchedule() {
       const scheduleDiv = document.getElementById('schedule');
-      const now = new Date(); // **DIUBAH:** Menggunakan waktu saat ini
+      const now = new Date();
       const { day, person } = getJuruKunciForDay(now);
       const formattedDate = formatDate(now);
       scheduleDiv.innerHTML = `
@@ -311,8 +267,8 @@
       const weeklyTableBody = document.getElementById('weeklyTableBody');
       const button = document.getElementById('weeklyButton');
       const weeklyDiv = document.getElementById('weeklySchedule');
-      const now = new Date(); // **DIUBAH:** Menggunakan waktu saat ini
-      const startDate = new Date(now); // **DIUBAH:** Menggunakan waktu saat ini sebagai start
+      const now = new Date();
+      const startDate = new Date(now);
 
       let tableHtml = '';
       for (let i = 0; i < 14; i++) {
@@ -320,7 +276,8 @@
         date.setDate(startDate.getDate() + i);
         const { day, person } = getJuruKunciForDay(date);
         const formattedDate = formatDate(date);
-        const displayPerson = day === 'Sabtu' && person.includes('Monggo') ? 'Bebas' : person; // Tetap pakai ini
+        // Display 'Bebas' only if the person is 'Monggo ingkang longgar ngunci gerbang!'
+        const displayPerson = person.includes('Monggo') ? 'Bebas' : person; 
         tableHtml += `
           <tr>
             <td>${day}, ${formattedDate}</td>
